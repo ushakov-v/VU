@@ -5,12 +5,14 @@ public class Game {
     private int hero_id;
     private int num_games;
 
+    //Конструктор
     public Game(int user_id, int hero_id, int num_games) {
         this.user_id = user_id;
         this.hero_id = hero_id;
         this.num_games = num_games;
     }
 
+    //Геттеры и сеттеры
     public int getUserId() {
         return user_id;
     }

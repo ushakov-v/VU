@@ -11,15 +11,16 @@ import java.util.stream.Collectors;
 @Service
 public class Actions {
     public List<Game> readFile(String filepath) {
-        List<Game> records = new ArrayList<>();
-        boolean skipHeader = true; // флаг для пропуска первой строки
+        List<Game> records = new ArrayList<>(); // Пустой список для хранения записей об играх
+        boolean skipHeader = true; // Флаг для пропуска первой строки
 
+        // BufferedReader для чтения записей с файла .csv
         try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (skipHeader) {
                     skipHeader = false;
-                    continue; // пропускаем первую строку с заголовками
+                    continue; // Пропуск первой строки с заголовками
                 }
                 String[] values = line.split(",");
                 int user_id = Integer.parseInt(values[0]);
@@ -34,12 +35,14 @@ public class Actions {
     }
 
     public List<Map<String, Object>> getPopularHeroes(List<Game> records, int n) {
-        Map<Integer, Integer> heroGames = new HashMap<>();
-        Map<Integer, Map.Entry<Integer, Integer>> topPlayers = new HashMap<>();
+        Map<Integer, Integer> heroGames = new HashMap<>(); // Карта для хранения общего количества игр для каждого героя
+        Map<Integer, Map.Entry<Integer, Integer>> topPlayers = new HashMap<>(); // Карта для хранения игрока, который сыграл больше всего игр за каждого героя
 
         for (Game record : records) {
+            // Обновление общего количества игр для каждого героя
             heroGames.put(record.getHeroId(), heroGames.getOrDefault(record.getHeroId(), 0) + record.getNumGames());
 
+            // Проверка является ли текущий игрок лучшим игроком для данного героя
             if (!topPlayers.containsKey(record.getHeroId()) || record.getNumGames() > topPlayers.get(record.getHeroId()).getValue()) {
                 topPlayers.put(record.getHeroId(), Map.entry(record.getUserId(), record.getNumGames()));
             }
@@ -49,7 +52,7 @@ public class Actions {
             int heroId = entry.getKey();
             int numAllGames = entry.getValue();
             int userId = topPlayers.get(heroId).getKey();
-            Map<String, Object> result = new HashMap<>();
+            Map<String, Object> result = new HashMap<>(); // Преобразование каждой записи в карту с необходимыми данными
             result.put("heroId", heroId);
             result.put("numAllGames", numAllGames);
             result.put("userId", userId);
