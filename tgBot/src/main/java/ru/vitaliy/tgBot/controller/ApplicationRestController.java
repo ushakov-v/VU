@@ -23,7 +23,7 @@ public class ApplicationRestController {
     }
 
     @GetMapping("/clients/{id}/orders")
-    public List<ClientOrder> getClientOrders(@RequestParam Long id) {
+    public List<ClientOrder> getClientOrders(@PathVariable Long id) {
         return appService.getClientOrders(id);
     }
 
