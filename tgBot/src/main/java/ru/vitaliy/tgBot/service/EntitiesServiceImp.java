@@ -12,13 +12,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class AppService {
+public class EntitiesServiceImp {
     private final ProductRepository productRepository;
     private final ClientOrderRepository clientOrderRepository;
     private final OrderProductRepository orderProductRepository;
 
 
-    public AppService(ProductRepository productRepository, ClientOrderRepository clientOrderRepository, OrderProductRepository orderProductRepository) {
+    public EntitiesServiceImp(ProductRepository productRepository, ClientOrderRepository clientOrderRepository, OrderProductRepository orderProductRepository) {
         this.productRepository = productRepository;
         this.clientOrderRepository = clientOrderRepository;
         this.orderProductRepository = orderProductRepository;

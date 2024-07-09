@@ -3,12 +3,8 @@ package ru.vitaliy.tgBot;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.vitaliy.tgBot.entity.Category;
-import ru.vitaliy.tgBot.entity.Client;
-import ru.vitaliy.tgBot.entity.Product;
-import ru.vitaliy.tgBot.repository.CategoryRepository;
-import ru.vitaliy.tgBot.repository.ClientRepository;
-import ru.vitaliy.tgBot.repository.ProductRepository;
+import ru.vitaliy.tgBot.entity.*;
+import ru.vitaliy.tgBot.repository.*;
 
 import java.math.BigDecimal;
 
@@ -21,6 +17,10 @@ public class FillingTests {
     private CategoryRepository categoryRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private ClientOrderRepository clientOrderRepository;
+    @Autowired
+    private OrderProductRepository orderProductRepository;
 
     @Test
     void createTwoClients(){
@@ -37,6 +37,18 @@ public class FillingTests {
         client2.setPhoneNumber("89219306129");
         client2.setAddress("Москва");
         clientRepository.save(client2);
+
+        ClientOrder order1 = new ClientOrder();
+        order1.setClient(client1);
+        order1.setStatus(1);
+        order1.setTotal(BigDecimal.valueOf(1000.00));
+        clientOrderRepository.save(order1);
+
+        ClientOrder order2 = new ClientOrder();
+        order2.setClient(client2);
+        order2.setStatus(1);
+        order2.setTotal(BigDecimal.valueOf(1500.00));
+        clientOrderRepository.save(order2);
     }
 
     @Test
@@ -356,5 +368,40 @@ public class FillingTests {
         instantCoffee.setDescription("Универсальный растворимый кофе для быстрого заваривания.");
         instantCoffee.setPrice(BigDecimal.valueOf(180.0));
         productRepository.save(instantCoffee);
+    }
+
+    @Test
+    void addOrdersForClients() {
+        Client client1 = clientRepository.findByExternalId(1L);
+        Client client2 = clientRepository.findByExternalId(2L);
+
+        // Создаем заказы для каждого клиента
+        ClientOrder order1 = new ClientOrder();
+        order1.setClient(client1);
+        order1.setStatus(1); // Пример статуса заказа
+        order1.setTotal(new BigDecimal("1000.00"));
+        clientOrderRepository.save(order1);
+
+        ClientOrder order2 = new ClientOrder();
+        order2.setClient(client2);
+        order2.setStatus(1); // Пример статуса заказа
+        order2.setTotal(new BigDecimal("1500.00"));
+        clientOrderRepository.save(order2);
+
+        Product product1 = productRepository.findByName("Филадельфия");
+        Product product2 = productRepository.findByName("Гавайская");
+
+        // Добавляем продукты в заказы
+        OrderProduct orderProduct1 = new OrderProduct();
+        orderProduct1.setClientOrder(order1);
+        orderProduct1.setProduct(product1);
+        orderProduct1.setCountProduct(1);
+        orderProductRepository.save(orderProduct1);
+
+        OrderProduct orderProduct2 = new OrderProduct();
+        orderProduct2.setClientOrder(order2);
+        orderProduct2.setProduct(product2);
+        orderProduct2.setCountProduct(1);
+        orderProductRepository.save(orderProduct2);
     }
 }
