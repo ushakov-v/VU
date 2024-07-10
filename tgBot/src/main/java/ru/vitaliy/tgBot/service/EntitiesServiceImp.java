@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class EntitiesServiceImp {
+public class EntitiesServiceImp implements EntitiesService {
     private final ProductRepository productRepository;
     private final ClientOrderRepository clientOrderRepository;
     private final OrderProductRepository orderProductRepository;
@@ -32,7 +32,7 @@ public class EntitiesServiceImp {
         return clientOrderRepository.findByClientId(id);
     }
 
-    public Set<Product> getAllProductsInClientId(Long id) {
+    public Set<Product> getClientProducts(Long id) {
         List<ClientOrder> clientOrders = clientOrderRepository.findByClientId(id);
         return clientOrders.stream()
                 .flatMap(order -> orderProductRepository.findAllByClientOrderId(order.getId()).stream())
@@ -40,7 +40,7 @@ public class EntitiesServiceImp {
                 .collect(Collectors.toSet());
     }
 
-    public List<Product> getPopularProducts(Integer limit) {
+    public List<Product> getTopPopularProducts(Integer limit) {
         List<OrderProduct> allOrderProducts = orderProductRepository.findAll();
 
         // Сколько раз появляется каждый продукт

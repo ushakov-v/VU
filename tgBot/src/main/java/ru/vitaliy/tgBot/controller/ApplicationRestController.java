@@ -28,12 +28,12 @@ public class ApplicationRestController {
     }
 
     @GetMapping("/clients/{id}/products")
-    public Set<Product> getAllProductsInClientId(@PathVariable Long id){
-        return entitiesServiceImp.getAllProductsInClientId(id);
+    public Set<Product> getClientProducts(@PathVariable Long id){
+        return entitiesServiceImp.getClientProducts(id);
     }
 
     @GetMapping("/products/popular")
-    public List<Product> getPopularProducts(@RequestParam Integer limit) {
-        return entitiesServiceImp.getPopularProducts(limit);
+    public List<Product> getTopPopularProducts(@RequestParam Integer limit) {
+        return entitiesServiceImp.getTopPopularProducts(limit);
     }
 }
