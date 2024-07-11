@@ -1,9 +1,12 @@
 package ru.vitaliy.tgBot.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import ru.vitaliy.tgBot.entity.Category;
 import ru.vitaliy.tgBot.entity.ClientOrder;
 import ru.vitaliy.tgBot.entity.Product;
 import ru.vitaliy.tgBot.entity.OrderProduct;
+import ru.vitaliy.tgBot.repository.CategoryRepository;
 import ru.vitaliy.tgBot.repository.ClientOrderRepository;
 import ru.vitaliy.tgBot.repository.OrderProductRepository;
 import ru.vitaliy.tgBot.repository.ProductRepository;
@@ -12,16 +15,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class EntitiesServiceImp {
+@Transactional
+public class EntitiesServiceImp implements EntitiesService {
     private final ProductRepository productRepository;
     private final ClientOrderRepository clientOrderRepository;
     private final OrderProductRepository orderProductRepository;
+    private final CategoryRepository categoryRepository;
 
 
-    public EntitiesServiceImp(ProductRepository productRepository, ClientOrderRepository clientOrderRepository, OrderProductRepository orderProductRepository) {
+    public EntitiesServiceImp(ProductRepository productRepository, ClientOrderRepository clientOrderRepository, OrderProductRepository orderProductRepository, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.clientOrderRepository = clientOrderRepository;
         this.orderProductRepository = orderProductRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public List<Product> getProductsByCategoryId(Long categoryId) {
@@ -32,7 +38,7 @@ public class EntitiesServiceImp {
         return clientOrderRepository.findByClientId(id);
     }
 
-    public Set<Product> getAllProductsInClientId(Long id) {
+    public Set<Product> getClientProducts(Long id) {
         List<ClientOrder> clientOrders = clientOrderRepository.findByClientId(id);
         return clientOrders.stream()
                 .flatMap(order -> orderProductRepository.findAllByClientOrderId(order.getId()).stream())
@@ -40,7 +46,7 @@ public class EntitiesServiceImp {
                 .collect(Collectors.toSet());
     }
 
-    public List<Product> getPopularProducts(Integer limit) {
+    public List<Product> getTopPopularProducts(Integer limit) {
         List<OrderProduct> allOrderProducts = orderProductRepository.findAll();
 
         // Сколько раз появляется каждый продукт

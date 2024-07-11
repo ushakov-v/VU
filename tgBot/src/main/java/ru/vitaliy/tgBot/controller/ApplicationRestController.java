@@ -1,6 +1,7 @@
 package ru.vitaliy.tgBot.controller;
 
 import org.springframework.web.bind.annotation.*;
+import ru.vitaliy.tgBot.entity.Category;
 import ru.vitaliy.tgBot.entity.ClientOrder;
 import ru.vitaliy.tgBot.entity.Product;
 import ru.vitaliy.tgBot.service.EntitiesServiceImp;
@@ -28,12 +29,12 @@ public class ApplicationRestController {
     }
 
     @GetMapping("/clients/{id}/products")
-    public Set<Product> getAllProductsInClientId(@PathVariable Long id){
-        return entitiesServiceImp.getAllProductsInClientId(id);
+    public Set<Product> getClientProducts(@PathVariable Long id){
+        return entitiesServiceImp.getClientProducts(id);
     }
 
     @GetMapping("/products/popular")
-    public List<Product> getPopularProducts(@RequestParam Integer limit) {
-        return entitiesServiceImp.getPopularProducts(limit);
+    public List<Product> getTopPopularProducts(@RequestParam Integer limit) {
+        return entitiesServiceImp.getTopPopularProducts(limit);
     }
 }
