@@ -35,6 +35,7 @@ public class TelegramBotConnection {
     private final CategoryRepository categoryRepository;
     private Map<Long, Integer> userStates = new HashMap<>();
     private Map<Long, List<Product>> selectedProducts = new HashMap<>();
+    private Map<Long, Client> activeClients = new HashMap<>();  // Добавлено для хранения активных клиентов
 
     public TelegramBotConnection(ClientRepository clientRepository,
                                  ClientOrderRepository clientOrderRepository,
@@ -136,11 +137,7 @@ public class TelegramBotConnection {
                         client.setAddress(userData[2]);
                         clientRepository.save(client);
 
-                        ClientOrder clientOrder = new ClientOrder();
-                        clientOrder.setClient(client);
-                        clientOrder.setStatus(1);
-                        clientOrder.setTotal(BigDecimal.ZERO);
-                        clientOrderRepository.save(clientOrder);
+                        activeClients.put(chatId, client);
 
                         sendTextMessage(chatId, "Данные успешно записаны");
                         sendMenuOptions(chatId);
@@ -160,11 +157,14 @@ public class TelegramBotConnection {
                     new KeyboardButton("Пицца"),
                     new KeyboardButton("Роллы"),
                     new KeyboardButton("Бургеры"),
-                    new KeyboardButton("Напитки"),
+                    new KeyboardButton("Напитки")
+            ).addRow(
                     new KeyboardButton("Оформить заказ")
             ).resizeKeyboard(true);
             bot.execute(new SendMessage(chatId, "Выберите пункт меню:").replyMarkup(keyboard));
         }
+
+
 
         private void sendSubCategoryOptions(Long chatId, Long parentId) {
             List<KeyboardButton> categories = categoryRepository.findCategoriesByParentId(parentId)
@@ -197,11 +197,10 @@ public class TelegramBotConnection {
         private void sendOrderSummaryMessage(Long chatId) {
             List<Product> products = selectedProducts.get(chatId);
             if (products != null && !products.isEmpty()) {
-                StringBuilder orderSummary = new StringBuilder("Ваш заказ:\n");
+                StringBuilder orderSummary = new StringBuilder("Поздравляем с Заказом!:\n");
                 BigDecimal totalCost = products.stream().map(Product::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                // Retrieve client by chatId
-                Client client = clientRepository.findByExternalId(chatId);
+                Client client = activeClients.get(chatId);
 
                 if (client != null) {
                     ClientOrder clientOrder = new ClientOrder();
@@ -230,7 +229,7 @@ public class TelegramBotConnection {
 
     @PostConstruct
     public void createConnection() {
-        String botToken = "7498111931:AAGhABDvXv-BSQJBWgP2SNCFb9JwVAVxZQw"; // Replace with your Telegram bot token
+        String botToken = "7498111931:AAGhABDvXv-BSQJBWgP2SNCFb9JwVAVxZQw";
         bot = new TelegramBot(botToken);
         bot.setUpdatesListener(new TelegramUpdatesListener());
     }
