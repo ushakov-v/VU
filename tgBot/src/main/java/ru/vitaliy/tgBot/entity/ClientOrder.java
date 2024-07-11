@@ -1,6 +1,7 @@
 package ru.vitaliy.tgBot.entity;
 import jakarta.persistence.*;
 import java.math.*;
+import java.util.List;
 
 @Entity
 public class ClientOrder {
